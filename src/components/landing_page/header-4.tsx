@@ -3,7 +3,7 @@ import {
   House,
   Menu,
   Mail,
-  Star,
+  Moon,
   UserRound,
   X,
 } from "lucide-react"
@@ -33,7 +33,7 @@ export default function Header4() {
           onClick={closeMenu}
         >
           So
-          <Star
+          <Moon
             className="inline-block size-2 fill-emerald-400 text-emerald-500 transition-transform duration-200 hover:scale-150 hover:fill-emerald-300"
             aria-hidden="true"
           />
