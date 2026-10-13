@@ -48,7 +48,7 @@ function Footer() {
           </p>
         </div>
 <div className="flex items-center justify-center gap-6">
-    <p className="font-logo text-lg text-muted-foreground">Made with💚Love</p>
+    <p className="font-logo text-lg text-muted-foreground">Made with💚Love by SoNDos</p>
     </div>
         <div className="flex items-center justify-center gap-6">
           <nav className="flex items-center gap-3" aria-label="Social links">
