@@ -1,5 +1,12 @@
-import { Mail, MapPin, Phone,Send } from "lucide-react"
+import { Mail, MapPin, Phone, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { supabase } from "@/lib/supabase"
+import { toast } from "sonner"
+import { useState } from "react"
+import type { FormEvent } from "react"
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 
 const contactDetails = [
   {
@@ -22,6 +29,90 @@ const contactDetails = [
 ]
 
 function Contact() {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [status, setStatus] = useState<{
+    type: "success" | "error"
+    message: string
+  } | null>(null)
+
+async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  event.preventDefault()
+  if (isSubmitting) return
+
+  setIsSubmitting(true)
+  setStatus(null)
+
+  const form = event.currentTarget
+  const formData = new FormData(form)
+
+  const name = String(formData.get("name") ?? "").trim()
+  const email = String(formData.get("email") ?? "").trim()
+  const subject = String(formData.get("subject") ?? "").trim()
+  const message = String(formData.get("message") ?? "").trim()
+
+  try {
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error("Supabase configuration is missing")
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/rest/v1/contact_messages`,
+      {
+        method: "POST",
+        headers: {
+          apikey: supabaseAnonKey,
+          Authorization: `Bearer ${supabaseAnonKey}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({ name, email, subject, message }),
+      },
+    )
+
+    if (!response.ok) throw new Error("Contact message submission failed")
+
+    const { data: notificationData, error: notificationError } =
+      await supabase.functions.invoke("contact-notification", {
+        body: {
+          name,
+          email,
+          subject,
+          message,
+        },
+      })
+
+    form.reset()
+
+    if (notificationError || !notificationData?.success) {
+      console.error(
+        "Contact notification failed:",
+        notificationError ?? notificationData,
+      )
+      setStatus({
+        type: "success",
+        message:
+          "Your message was saved, but the email notification failed.",
+      })
+      toast.success("Your message was saved, but the email notification failed.")
+    } else {
+      setStatus({
+        type: "success",
+        message: "Your message has been sent successfully!",
+      })
+      toast.success("Your message has been sent successfully!")
+    }
+  } catch (error) {
+    console.error("Contact form submission failed:", error)
+
+    setStatus({
+      type: "error",
+      message: "Unable to send your message. Please try again.",
+    })
+    toast.error("Unable to send your message. Please try again.")
+  } finally {
+    setIsSubmitting(false)
+  }
+}
   return (
     <section id="contact" className="border-t border-border/60 py-24 sm:py-32">
       <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20 lg:px-8">
@@ -66,7 +157,8 @@ function Contact() {
           </div>
         </div>
 
-        <form className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+        <form   onSubmit={handleSubmit}
+         className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
           <div className="grid gap-6 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium text-card-foreground">
               Name
@@ -112,16 +204,17 @@ function Contact() {
             />
           </label>
           <Button
-            type="submit"
-            className="mt-6 h-11 w-full px-5 text-sm font-medium focus:ring-2 focus:ring-ring/50 focus:ring-offset-2 focus:ring-offset-card"
-          >
-            <Send className="size-4 ml-3" aria-hidden="true" />
-            Send message
-          </Button>
-        </form>
+  type="submit"
+  disabled={isSubmitting}
+  className="mt-6 h-11 w-full px-5 text-sm font-medium focus:ring-2 focus:ring-ring/50 focus:ring-offset-2 focus:ring-offset-card"
+>
+  <Send className="ml-3 size-4" aria-hidden="true" />
+  {isSubmitting ? "Sending..." : "Send message"}
+</Button>
+</form>
       </div>
     </section>
   )
-}
+}   
 
 export default Contact

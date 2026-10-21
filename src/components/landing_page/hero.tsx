@@ -2,6 +2,7 @@ import { ArrowRight, Download } from "lucide-react"
 import { IoMdStarOutline } from "react-icons/io"
 
 import { buttonClassName } from "@/components/ui/button"
+import { NoiseBackground } from "@/components/ui/noise-background"
 
 function Hero() {
   
@@ -21,6 +22,7 @@ const shootingStars = [
       id="hero"
       className="relative isolate overflow-hidden bg-emerald-100 dark:bg-background py-24 transition-colors sm:py-32 lg:py-40 "
     >
+      
      
 <div
   className="pointer-events-none absolute inset-0 -z-10"
@@ -48,22 +50,40 @@ const shootingStars = [
             I&apos;m Sondos Sofian, a software engineer who turns thoughtful
             ideas into useful, beautiful products.
           </p>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-10 flex flex-row gap-2 sm:gap-3">
             <a
               href="#contact"
-              className={buttonClassName("default", "h-12 gap-2 px-6 text-sm font-medium")}
+              className={buttonClassName(
+                "default",
+                "h-12 min-w-0 flex-1 gap-2 px-4 text-sm font-medium sm:flex-none sm:px-6",
+              )}
             >
               Get in Touch
               <ArrowRight className="size-4" aria-hidden="true" />
             </a>
-            <a
-              href="/Sondos-Sofian-CV.pdf"
-              download="Sondos-Sofian-CV.pdf"
-              className={buttonClassName("outline", "h-12 gap-2 px-6 text-sm font-medium")}
+            <NoiseBackground
+              containerClassName="min-w-0 flex-1 rounded-full p-1 sm:flex-none"
+              className="rounded-full"
+              gradientColors={[
+                "rgb(0,255,255)",
+                "rgb(100, 150, 255)",
+                "rgb(2,67,172)",
+              ]}
+              noiseIntensity={0.12}
+              speed={0.08}
             >
-              Download CV
-              <Download className="size-4" aria-hidden="true" />
-            </a>
+              <a
+                href="/Sondos-Sofian-CV.pdf"
+                download="Sondos-Sofian-CV.pdf"
+                className={buttonClassName(
+                  "outline",
+                  "h-10 w-full gap-2 px-3 text-sm font-medium sm:w-auto sm:px-5",
+                )}
+              >
+                Download CV
+                <Download className="size-4" aria-hidden="true" />
+              </a>
+            </NoiseBackground>
           </div>
         </div>
       </div>

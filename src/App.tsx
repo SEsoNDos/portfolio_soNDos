@@ -3,6 +3,7 @@ import Footer from "@/components/landing_page/footer"
 import Header4 from "@/components/landing_page/header-4"
 import Hero from "@/components/landing_page/hero"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Contact />
       </main>
       <Footer />
+      <Toaster position="bottom-center" richColors />
     </ThemeProvider>
   )
 }
